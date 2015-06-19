@@ -1,0 +1,214 @@
+import java.util.*;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+
+public class Reservoir 
+{
+	private String name;
+	private String id;
+	private String division;
+	private String district;
+	private String river;
+	private String state;
+	private String closestMajorDam;
+	private int numOfUpstreamDam;
+	private boolean boundary;
+	private String purpose;
+	
+	private ArrayList<Double> volume  = new ArrayList<Double>();
+	private ArrayList<Double> guideVolume  = new ArrayList<Double>();
+	private ArrayList<Double> guideDiff  = new ArrayList<Double>();
+	private ArrayList<Double> avgPrecip  = new ArrayList<Double>();
+	private ArrayList<Double> level  = new ArrayList<Double>();
+	private DescriptiveStatistics volumeStats = new DescriptiveStatistics();
+	private DescriptiveStatistics guideVolumeStats = new DescriptiveStatistics();
+	private DescriptiveStatistics guideDiffStats = new DescriptiveStatistics();
+	private double meanV;
+	private double stdV;
+	private double medianV;
+	private double meanGV;
+	private double stdGV;
+	private double medianGV;
+	private double skewGV;
+	private double meanDiff;
+	private double stdDiff;
+	private double medianDiff;
+	
+	public Reservoir(String name, String id ,String division, String district, 
+			String river, String state, String closestMajorDam, int num, boolean boundary, String purpose)
+	{
+		this.name=name;
+		this.id=id;
+		this.division=division;
+		this.district=district;
+		this.river=river;
+		this.state=state;
+		this.closestMajorDam=closestMajorDam;
+		this.numOfUpstreamDam=num;
+		this.boundary=boundary;
+		this.purpose=purpose;
+	}
+	public void getGuideDiff()
+	{
+		for(int i=0;i<volume.size();i++)
+		{
+			guideDiff.add(guideVolume.get(i)-volume.get(i));
+		}
+	}
+	public String getPurpose()
+	{
+		return purpose;
+	}
+	public double getVolMean()
+	{
+		return meanV;
+	}
+	public double getGuideVolMean()
+	{
+		return meanGV;
+	}
+	public double getGuideDiffMean()
+	{
+		return meanDiff;
+	}
+	public double getVolStd()
+	{
+		return stdV;
+	}
+	public double getGuideVolStd()
+	{
+		return stdGV;
+	}
+	public double getGuideDiffStd()
+	{
+		return stdDiff;
+	}
+	public double getVolMedian()
+	{
+		return medianV;
+	}
+	public double getGuideVolMedian()
+	{
+		return medianGV;
+	}
+	public double getGuideDiffMedian()
+	{
+		return medianDiff;
+	}
+	public void loadVolumeStats()
+	{
+		for( int i = 0; i < volume.size(); i++) 
+		{
+			volumeStats.addValue(volume.get(i));
+		}
+		meanV = volumeStats.getMean();
+		stdV = volumeStats.getStandardDeviation();
+		medianV = volumeStats.getPercentile(50);
+		
+	}
+	public void loadGuideVolumeStats()
+	{
+		for( int i = 0; i < guideVolume.size(); i++) 
+		{
+			guideVolumeStats.addValue(guideVolume.get(i));
+		}
+		meanGV = guideVolumeStats.getMean();
+		stdGV = guideVolumeStats.getStandardDeviation();
+		medianGV = guideVolumeStats.getPercentile(50);
+		skewGV = guideVolumeStats.getSkewness();
+	}
+	public double getGuideVolSkew()
+	{
+		return skewGV;
+	}
+	public void loadGuideDiffStats()
+	{
+		for( int i = 0; i < guideDiff.size(); i++) 
+		{
+			guideDiffStats.addValue(guideDiff.get(i));
+		}
+		meanDiff = guideDiffStats.getMean();
+		stdDiff = guideDiffStats.getStandardDeviation();
+		medianDiff = guideDiffStats.getPercentile(50);
+	}
+	public String getName()
+	{
+		return this.name;
+	}
+	public void addVolume(ArrayList<Double> volume)
+	{
+		this.volume=volume;
+	}
+	public void addPrecip(ArrayList<Double> avgPrecip)
+	{
+		this.avgPrecip=avgPrecip;
+	}
+	public void addLevel(ArrayList<Double> level)
+	{
+		this.level=level;
+	}
+	public void linearReg()
+	{
+		OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+		double[] y = new double[level.size()];
+		for(int i=0;i<level.size();i++)
+		{
+			y[i]=level.get(i);
+		}
+		double[] x = new double[avgPrecip.size()];
+		for(int i=0;i<avgPrecip.size();i++)
+		{
+			x[i]=avgPrecip.get(i);
+		}
+		regression.newSampleData(y, x);
+	}
+	public void addGuideVolume(ArrayList<Double> volume)
+	{
+		this.guideVolume=volume;
+	}
+	private double getMinMaxVol(int flip,int guide)
+	{
+		if(this.volume.size()==0||this.guideVolume.size()==0)
+		{
+			return 0;
+		}
+		ArrayList<Double> calc= new ArrayList<Double>();
+		if(guide==1)
+		{
+			calc= new ArrayList<Double>(this.guideVolume);
+		}
+		else
+		{
+			calc= new ArrayList<Double>(this.volume);
+		}
+		
+		//Collections.copy(calc,);
+		Collections.sort(calc);                             // Sort
+		if(flip==1)
+	    return calc.get(calc.size()-1);   // Last element
+		
+	    return calc.get(0);                    // First element
+		
+	}
+	public double getMaxVol()
+	{
+		return getMinMaxVol(1,0);
+	}
+	public double getMinVol()
+	{
+		return getMinMaxVol(0,0);
+	}
+	public double getMaxGuideVol()
+	{
+		return getMinMaxVol(1,1);
+	}
+	public double getMinGuideVol()
+	{
+		return getMinMaxVol(0,1);
+	}
+	
+	
+
+}

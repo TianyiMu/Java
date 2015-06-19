@@ -1,0 +1,217 @@
+import java.util.*;
+
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
+
+public class Analyze 
+{
+	
+	public static void main(String[] args) 
+	{
+		DBconnection.getConnection();
+		HashMap<String,Reservoir> reservoirMap=DBconnection.readReservoirCharacteristics();
+		//double floodMeanStd;
+		//double navigationMeanStd;
+		//double recreationMeanStd;
+		//double waterMeanStd;
+		/*DescriptiveStatistics floodStats = new DescriptiveStatistics();
+		DescriptiveStatistics navigationStats = new DescriptiveStatistics();
+		DescriptiveStatistics recreationStats = new DescriptiveStatistics();
+		DescriptiveStatistics waterStats = new DescriptiveStatistics();
+		DescriptiveStatistics fishStats = new DescriptiveStatistics();
+		FastFourierTransformer fft=new FastFourierTransformer(null);
+		double[] l={0.0,162.6345596729059,230.0, 162.63455967290594,2.8166876380389125E-14,-162.6345596729059,-230.0,-162.63455967290597};
+		Complex[] r= fft.transform(l,TransformType.INVERSE);
+		System.out.println(r);
+		int truecount=0;
+		int flood=0;
+		int nav=0;
+		int rec=0;
+		int water=0;
+		int fish=0;*/
+		/*floodStats.addValue(144802.2866649261);
+		floodStats.addValue(132414.41763519956);
+		floodStats.addValue(52821.14778256961);
+		navigationStats.addValue(10743.007386068812);
+		navigationStats.addValue(10681.602830277734);
+		navigationStats.addValue(3728.6877429173333);
+		recreationStats.addValue(21733.01217387429);
+		recreationStats.addValue(21846.044440733116);
+		recreationStats.addValue(23266.21514663304);
+		waterStats.addValue(22085.50099623158);
+		waterStats.addValue(21333.538903901375);
+		waterStats.addValue(7189.51497981126);
+		fishStats.addValue(54525.3323266916);
+		fishStats.addValue(38205.985657946316);
+		fishStats.addValue(37140.49324807983);*/
+		/*for(Map.Entry<String,Reservoir> entry : reservoirMap.entrySet()) 
+		{
+			  String key = entry.getKey();
+			  Reservoir value = entry.getValue();
+			  value.addVolume(DBconnection.getVolume(key));
+			  value.addGuideVolume(DBconnection.getGuideVolume(key));
+			  value.loadVolumeStats();
+			  value.getGuideDiff();
+			  value.loadGuideDiffStats();
+			  value.loadGuideVolumeStats();
+			  if(value.getPurpose().equals("Navigation"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+				  //navigationStats.addValue(value.getVolStd());
+				  navigationStats.addValue(value.getGuideVolSkew());
+			  }
+			  else if(value.getPurpose().equals("Water Supply"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+				  waterStats.addValue(value.getGuideVolSkew());
+			  }
+			  else if(value.getPurpose().equals("Fish and Wildlife Pond"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+					  	fishStats.addValue(value.getGuideVolSkew());
+			  }
+			  else if(value.getPurpose().equals("Water Supply"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+				  waterStats.addValue(value.getGuideVolSkew());
+			  }
+			  else if(value.getPurpose().equals("Flood Control"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+				  floodStats.addValue(value.getGuideVolSkew());
+			  }
+			  else if(value.getPurpose().equals("Recreation"))
+			  {
+				  if(value.getGuideVolSkew()!=0)
+				  recreationStats.addValue(value.getGuideVolSkew());
+			  }*/
+			  /*String purpose="";
+			  if(value.getPurpose().equals("Flood Control"))
+				  purpose="Flood Control";
+			  else
+			  		purpose=getType(value);
+			  if(purpose.equals(value.getPurpose()))
+			  {
+				  truecount++;
+				  if(purpose.equals("Recreation"))
+					  rec++;
+				  if(purpose.equals("Flood Control"))
+					  flood++;
+				  if(purpose.equals("Water Supply"))
+					  water++;
+				  if(purpose.equals("Fish and Wildlife Pond"))
+					  fish++;
+				  if(purpose.equals("Navigation"))
+					  nav++;
+			  }*/
+			  /*
+
+			  System.out.println(key + " => " + value.getName()
+					  //+" "+purpose+" "+purpose.equals(value.getPurpose())
+					  );
+		}
+		
+		System.out.println("flood:"+floodStats.getSkewness());
+		System.out.println("Recreation:"+recreationStats.getMean());
+		System.out.println("Water Supply:"+waterStats.getMean());
+		System.out.println("Navigation:"+navigationStats.getMean());
+		System.out.println("Fish and Wildlife Pond:"+fishStats.getMean());*/
+		//System.out.println(truecount+"flood "+flood+"water "+water+"rec "+rec+"nav "+nav+"fish "+fish);
+		
+		String resKeyOR="OR00014";
+		Reservoir OR00014=reservoirMap.get(resKeyOR);
+		OR00014.addVolume(DBconnection.getVolume(resKeyOR));
+		OR00014.addGuideVolume(DBconnection.getGuideVolume(resKeyOR));
+		OR00014.loadVolumeStats();
+		OR00014.getGuideDiff();
+		OR00014.loadGuideDiffStats();
+		System.out.println("std: flood control "+OR00014.getGuideDiffStd());
+		/*String resKeyAR="AR00170";
+		Reservoir AR00170=reservoirMap.get(resKeyAR);
+		AR00170.addVolume(DBconnection.getVolume(resKeyAR));
+		AR00170.addGuideVolume(DBconnection.getGuideVolume(resKeyAR));
+		AR00170.loadVolumeStats();
+		System.out.println("std: navigation "+AR00170.getVolStd());
+		String resKeyAL="AL01432";
+		Reservoir AL01432=reservoirMap.get(resKeyAL);
+		AL01432.addVolume(DBconnection.getVolume(resKeyAL));
+		AL01432.addGuideVolume(DBconnection.getGuideVolume(resKeyAL));
+		AL01432.loadVolumeStats();
+		System.out.println("std: recreation "+AL01432.getVolStd());
+		String resKeyNC="NC01713";
+		Reservoir NC01713=reservoirMap.get(resKeyNC);
+		NC01713.addVolume(DBconnection.getVolume(resKeyNC));
+		NC01713.addGuideVolume(DBconnection.getGuideVolume(resKeyNC));
+		NC01713.loadVolumeStats();
+		System.out.println("std: water supply "+NC01713.getVolStd());*/
+		
+		
+		
+	}
+	public static String getType2(Reservoir res)
+	{
+		DescriptiveStatistics tempStat = new DescriptiveStatistics();
+		tempStat.addValue(res.getGuideDiffStd());
+		tempStat.addValue(res.getGuideVolStd());
+		tempStat.addValue(res.getVolStd());
+		String type="Flood Control";
+		double diff=Math.abs(tempStat.getStandardDeviation()-49915.057539495);
+		if(Math.abs(tempStat.getStandardDeviation()-854.4367036166578)<diff)
+		{
+			type="Recreation";
+			diff=Math.abs(tempStat.getStandardDeviation()-854.4367036166578);
+		}
+		if(Math.abs(tempStat.getStandardDeviation()-8391.555866414414)<diff)
+		{
+			type="Water Supply";
+			diff=Math.abs(tempStat.getStandardDeviation()-8391.555866414414);
+		}
+		if(Math.abs(tempStat.getStandardDeviation()-4032.1102578306)<diff)
+		{
+			type="Navigation";
+			diff=Math.abs(tempStat.getStandardDeviation()-4032.1102578306);
+		}
+		if(Math.abs(tempStat.getStandardDeviation()-9744.134813306906)<diff)
+		{
+			type="Fish and Wildlife Pond";
+		}
+		return type;
+	}
+	public static String getType(Reservoir res)
+	{
+		String type="Flood Control";
+		double diff=Math.abs(Math.abs(res.getGuideDiffStd()-132414.41763519956)+
+				Math.abs(res.getGuideVolStd()-52821.14778256961)+Math.abs(res.getVolStd()-144802.2866649261));
+		//if(Math.abs(Math.abs(res.getGuideDiffStd()-21846.044440733116)+
+		//		Math.abs(res.getGuideVolStd()-23266.21514663304)+Math.abs(res.getVolStd()-21733.01217387429))<diff)
+		//{
+			type="Recreation";
+			diff=Math.abs(Math.abs(res.getGuideDiffStd()-21846.044440733116)+
+					Math.abs(res.getGuideVolStd()-23266.21514663304)+Math.abs(res.getVolStd()-21733.01217387429));
+		//}
+		if(Math.abs(Math.abs(res.getGuideDiffStd()-21333.538903901375)+
+				Math.abs(res.getGuideVolStd()-7189.51497981126)+Math.abs(res.getVolStd()-22085.50099623158))<diff)
+		{
+			type="Water Supply";
+			diff=Math.abs(Math.abs(res.getGuideDiffStd()-21333.538903901375)+
+					Math.abs(res.getGuideVolStd()-7189.51497981126)+Math.abs(res.getVolStd()-22085.50099623158));
+		}
+		if(Math.abs(Math.abs(res.getGuideDiffStd()-10681.602830277734)+
+				Math.abs(res.getGuideVolStd()-3728.6877429173333)+Math.abs(res.getVolStd()-10743.007386068812))<diff)
+		{
+			type="Navigation";
+			diff=Math.abs(Math.abs(res.getGuideDiffStd()-10681.602830277734)+
+					Math.abs(res.getGuideVolStd()-3728.6877429173333)+Math.abs(res.getVolStd()-10743.007386068812));
+		}
+		if(Math.abs(Math.abs(res.getGuideDiffStd()-38205.985657946316)+
+				Math.abs(res.getGuideVolStd()-37140.49324807983)+Math.abs(res.getVolStd()-54525.3323266916))<diff)
+		{
+			type="Fish and Wildlife Pond";
+			//diff=Math.abs(std-37140.49324807983);
+		}
+		return type;
+	}
+
+}
